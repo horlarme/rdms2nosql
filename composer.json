@@ -1,0 +1,21 @@
+{
+    "name": "horlarme/rdms2nosql",
+    "description": "Easily migrate your SQL data into NoSQL",
+    "type": "project",
+    "license": "Apache2.0",
+    "authors": [
+        {
+            "name": "Lawal Oladipupo",
+            "email": "lawaloladipupo@outlook.com"
+        }
+    ],
+    "autoload":{
+        "psr-4": { "horlarme\\rdms2nosql\\" : "Class/"},
+        "files": [
+            "helper.php"
+        ]
+    }, 
+    "require": {
+        "mongodb/mongodb": "^1.2"
+    }
+}
