@@ -82,27 +82,38 @@ require_once "./header.php"
 
                     url = 'response.php?current=' + current + '&total=' + total;
 
-                     response = getResponse(url);
-
-                     if(response.success){
-
-                        $('.processedItems').text(current)
-                        $('.status').text('Extracting').addClass('bg-primary').removeClass('bg-warning');    
-                        
-                        //Checking if the current is not the last
-                        if(total == current){
-                            $('.status').text('Completed').addClass('bg-success').removeClass('bg-primary');
-                            return $.get('response.php?cleanFlash');
-                        }else{
-                            //Increase current
-                            current++;
-                             //Clicking the button again
-                             return $('[data-migrate]').click();
-                        }
-                     }else{
-                        $('.status').text('Retrying Failed').addClass('bg-warning').removeClass('bg-primary');
-                        $('[data-migrate]').click();
-                     }
+                     getResponse(url)
+                        .done(function(response){
+                            if(response.success){
+                                $('.processedItems').text(current)
+                                $('.status').text('Extracting').addClass('bg-primary').removeClass('bg-warning');    
+                                
+                                //Checking if the current is not the last
+                                if(total == current){
+                                    $('.status').text('Completed').addClass('bg-success').removeClass('bg-primary');
+                                    return $.get('response.php?cleanFlash');
+                                }else{
+                                    //Increase current
+                                    current++;
+                                     //Clicking the button again
+                                    setTimeout(function() {
+                                        return $('[data-migrate]').click();
+                                    }, 3000);
+                                }
+                             }else if(response.fail){
+                                $('.status').text('Retrying Failed').addClass('bg-warning').removeClass('bg-primary');
+                                setTimeout(function() {
+                                    return $('[data-migrate]').click();
+                                }, 5000);
+                             }
+                         }
+                     )
+                        .fail(function(){
+                            $('.status').text('Retrying Failed').addClass('bg-warning').removeClass('bg-primary');
+                            setTimeout(function() {
+                                return $('[data-migrate]').click();
+                            }, 8000);
+                        });
                 });
 
                 function getResponse(url){

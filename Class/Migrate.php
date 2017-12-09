@@ -90,7 +90,7 @@ class Migrate extends ProcessForm
 			$noSQL = $this->insertRow($json);
 			if($noSQL){
 				return [
-					'success',
+					'success' => true,
 					'current' => $row
 				];
 			}else{
@@ -102,6 +102,6 @@ class Migrate extends ProcessForm
 	}
 
 	function slightError(){
-		return ['fail'];
+		return ['fail' => true];
 	}
 }
