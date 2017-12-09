@@ -92,11 +92,12 @@ require_once "./header.php"
                         //Checking if the current is not the last
                         if(total == current){
                             $('.status').text('Completed').addClass('bg-success').removeClass('bg-primary');
+                            return $.get('response.php?cleanFlash');
                         }else{
                             //Increase current
                             current++;
                              //Clicking the button again
-                             $('[data-migrate]').click();
+                             return $('[data-migrate]').click();
                         }
                      }else{
                         $('.status').text('Retrying Failed').addClass('bg-warning').removeClass('bg-primary');

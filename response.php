@@ -15,4 +15,9 @@ if($_GET['current']){
 	echo json_encode(
 		$a->export($_GET['current'])
 	);
+
+	if($_GET['cleanFlash']){
+		$b =new horlarme\rdms2nosql\ProcessForm;
+		$b->cleanFlash();
+	}
 }

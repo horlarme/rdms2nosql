@@ -36,6 +36,40 @@ class Database
 		}catch(\Exception $e){
 			exit($e->getMessage());
 		}
-
 	}
+
+	
+
+	/**
+	 * Mongo Connection
+	 * @return PDOObject
+	 */
+	function mongo(){
+		$arg = $this->args;
+
+		/**
+		 * Information
+		 */
+		define('MHost', $arg['nosqlHost']);
+		define('MUser', $arg['nosqlUsername']);
+		define('MPass', $arg['nosqlPassword']);
+		define('MPort', $arg['nosqlPort']);
+		define('MDB', $arg['nosqlDatabase']);
+
+		try{
+
+			if(MUser != "")
+				$user = MUser . ':' . MPass . '@';
+			else $user = "";
+
+			$m = new \MongoDB\Client('mongodb://' . $user . MHost . ':' . MPort);
+			return $m
+				->{MDB}
+				->{$arg['nosqlCollection']};
+		}catch(\Exception $e){
+			exit($e->getMessage());
+		}
+	}
+
+
 }

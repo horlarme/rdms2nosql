@@ -17,6 +17,12 @@ class Migrate extends ProcessForm
 	 */
 	protected $mysql;
 
+	/**
+	 * Mongo Object
+	 * @var $mongo Object
+	 */
+	protected $mongo;
+
 
 	function __construct(){
 
@@ -32,6 +38,7 @@ class Migrate extends ProcessForm
 		$db = new Database($this->form);
 
 		$this->mysql = $db->mysql();
+		$this->mongo = $db->mongo();
 	}
 
 	/**
@@ -69,9 +76,7 @@ class Migrate extends ProcessForm
 
 	function insertRow($row){
 
-		$collection = (new \MongoDB\Client)->test->users;
-
-		$insertOneResult = $collection->insertOne($row);
+		$insertOneResult = $this->mongo->insertOne($row);
 
 		return ($insertOneResult->getInsertedId());
 	}
