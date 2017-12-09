@@ -1,5 +1,4 @@
 <?php
-echo "string";
 
 /**
  * Flash Message into Session

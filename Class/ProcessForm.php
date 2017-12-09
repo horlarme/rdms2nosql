@@ -56,15 +56,34 @@ class ProcessForm
 	function middleware(){
 		$form = $this->form();
 
-		if($form['sqlHost'] || $form['nosqlHost'] ||
-			$form['sqlUsername'] || $form['nosqlUsername'] || 
-			$form['sqlPost'] || $form['nosqlPort'] ||
-			$form['sqlDatabase'] || $form['nosqlDatabase'] == ""){
-			/**
-			 * Sending Error Message
-			 */
-			$this->flashMessage('noSqlError', "Some of the fields are required");
+		$hasError = false;
+
+		/**
+		 * Sending Error Message
+		 */
+		if("" == $form['sqlHost'] && "" == $form['sqlDatabase'] && "" == $form['sqlUsername'] && "" == $form['sqlPost'])
+		{
+			$hasError = true;
 			$this->flashMessage('sqlError', "Some of the fields are required");
+		}
+		if($form['nosqlUsername'] && $form['nosqlPort'] && $form['nosqlHost'] && $form['nosqlDatabase'] == ""){
+			$hasError = true;
+			$this->flashMessage('noSqlError', "Some of the fields are required");
+		}
+		if($form['dataCounter'] ==""){
+			$hasError = true;
+			$this->flashMessage('dataCounter', "This field is required");
+		}
+		if($form['dataFetch'] == ""){
+			$hasError = true;
+			$this->flashMessage('dataFetch', "This field is required");
+		}
+
+
+		/**
+		 * If there is an error
+		 */
+		if($hasError){
 			$this->flashMessage('form', $form);
 			header('location: ' . $_SERVER['HTTP_REFERER']);
 		}

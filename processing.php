@@ -1,6 +1,6 @@
 <?php
 
-require_once "./vendor/autoload.php";
+require_once "./vendor/autoload.php"; 
 
 /**
  * Loading ProcessForm Class
@@ -21,6 +21,8 @@ $a->middleware();
  */
 $b = new horlarme\rdms2nosql\Migrate;
 
+$b->storeAsSession();
+
 /**
  * Adding Header Template
  */
@@ -33,9 +35,9 @@ require_once "./header.php"
                         <h3 class="panel-title">Data Information</h3>
                     </div>
                     <div class="panel-body table-responsive">
-                        <table>
+                        <table class="table-responsive">
                             <tr>
-                                <td class="strong">Items to migrate</td>
+                                <td><strong>Items to migrate</strong></td>
                                 <td><?= $b->itemsToMigrate();?></td>
                             </tr>
                         </table>
@@ -45,28 +47,67 @@ require_once "./header.php"
             <div class="col-xs-12 col-md-6 box">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">NoSQL Connection</h3>
+                        <h3 class="panel-title">Process</h3>
                     </div>
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <label for="nosqlHost">Host Name</label>
-                            <input type="text" class="form-control" name="nosqlHost" placeholder="localhost">
-                        </div>
-                        <div class="form-group">
-                            <label for="nosqlPassword">Password</label>
-                            <input type="password" class="form-control" name="nosqlPassword">
-                        </div>
-                        <div class="form-group">
-                            <label for="nosqlPort">Port</label>
-                            <input type="number" class="form-control" name="nosqlPort" value="27017">
-                        </div>
-                        <div class="form-group">
-                            <label for="nosqlDatabase">Database</label>
-                            <input type="text" class="form-control" name="nosqlDatabase" placeholder="my_database">
-                        </div>
+                    <div class="panel-body table-responsive">
+                        <table>
+                            <tr>
+                                <td><strong>Processed</strong></td>
+                                <td><span class="processedItems">0</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Remainings</strong></td>
+                                <td><span><?= $b->itemsToMigrate(); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Status</strong></td>
+                                <td><span class="status bg-primary">Click Migrate Button to Start Migration</span></td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="row">
+            <div class="clearfix"></div>
+            <div data-migrate class="btn btn-lg btn-success col-xs-6 col-xs-offset-3">Migrate</div>
+            <script>
+                /**
+                 * Migration Configuration
+                 */
+                 current = 1;
+                 total = <?= $b->itemsToMigrate(); ?>;
+                
+                $('[data-migrate]').click(function(){
+
+                    url = 'response.php?current=' + current + '&total=' + total;
+
+                     response = getResponse(url);
+
+                     if(response.success){
+
+                        $('.processedItems').text(current)
+                        $('.status').text('Extracting').addClass('bg-primary').removeClass('bg-warning');    
+                        
+                        //Checking if the current is not the last
+                        if(total == current){
+                            $('.status').text('Completed').addClass('bg-success').removeClass('bg-primary');
+                        }else{
+                            //Increase current
+                            current++;
+                             //Clicking the button again
+                             $('[data-migrate]').click();
+                        }
+                     }else{
+                        $('.status').text('Retrying Failed').addClass('bg-warning').removeClass('bg-primary');
+                        $('[data-migrate]').click();
+                     }
+                });
+
+                function getResponse(url){
+                    return $.get(url);
+                }
+            </script>
         </div>
 <?php
 /**
