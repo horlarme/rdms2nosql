@@ -168,6 +168,8 @@ require_once "./header.php"
 
                 function stopMigration(){
                     isStopped = true;
+                    //Changing the text of Migrate to Continue Extract when it is stopped
+                    $('[data-migrate]').text('Continue Extract');
                     $('.status')
                         .text('Extraction Stopped')
                         .addClass('bg-info')
