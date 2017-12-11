@@ -70,17 +70,48 @@ require_once "./header.php"
         </div>
         <div class="row">
             <div class="clearfix"></div>
-            <div data-migrate class="btn btn-lg btn-success col-xs-6 col-xs-offset-3">Migrate</div>
+            <div data-migrate class="btn btn-lg btn-success col-xs-3 col-xs-offset-3">Migrate</div>
+            <div data-migrate-stop class="btn btn-lg btn-warning col-xs-3">Stop</div>
             <script>
                 /**
                  * Migration Configuration
                  */
+                 /**
+                  * Determine if the migration to be stopped if set to true and false to allow migrating
+                  */
+                 isStopped = true;
+                 /**
+                  * The current number of the item to extract and import
+                  */
                  current = 1;
+                 /**
+                  * The totall number of items that will be looped over
+                  */
                  total = <?= $b->itemsToMigrate(); ?>;
-                
-                $('[data-migrate]').click(function(){
+                 /**
+                  * Create a url which will be sent to the server
+                  */
+                url = 'response.php?current=' + current + '&total=' + total;
 
-                    url = 'response.php?current=' + current + '&total=' + total;
+                /**
+                 * When the user click on migrate button
+                 */
+                $('[data-migrate]').click(function(){
+                    //Setting isStooped to true
+                    isStopped = false;
+                    //Starting the migration
+                    startMigrate();
+                });
+
+                function startMigrate(){
+
+                    /**
+                     * Check to see if the migration is asked to be stopped
+                     */
+                     if(isStopped){
+                         //Stop running this function
+                        return false;
+                     }
 
                      getResponse(url)
                         .done(function(response){
@@ -95,15 +126,19 @@ require_once "./header.php"
                                 }else{
                                     //Increase current
                                     current++;
-                                     //Clicking the button again
+                                     /**
+                                      * Clicking the button again after 3 seconds
+                                      * Made it to wait for 3 secs because by then the result for the las one would have been recieved
+                                      * and we won't be spaming the server
+                                      */
                                     setTimeout(function() {
-                                        return $('[data-migrate]').click();
+                                        return startMigrate();
                                     }, 3000);
                                 }
                              }else if(response.fail){
                                 $('.status').text('Retrying Failed').addClass('bg-warning').removeClass('bg-primary');
                                 setTimeout(function() {
-                                    return $('[data-migrate]').click();
+                                    return startMigrate();
                                 }, 5000);
                              }
                          }
@@ -111,13 +146,35 @@ require_once "./header.php"
                         .fail(function(){
                             $('.status').text('Retrying Failed').addClass('bg-warning').removeClass('bg-primary');
                             setTimeout(function() {
-                                return $('[data-migrate]').click();
+                                return startMigrate();
                             }, 8000);
                         });
-                });
+                };
 
+                /**
+                 * Send ajax to the server
+                 */
                 function getResponse(url){
                     return $.get(url);
+                }
+
+                /**
+                 * Stopping the migration
+                 */
+                $('[data-migrate-stop]').click(function(){
+                    //Stop migration
+                    stopMigration();
+                });
+
+                function stopMigration(){
+                    isStopped = true;
+                    $('.status')
+                        .text('Extraction Stopped')
+                        .addClass('bg-info')
+                        .removeClass('bg-warning')
+                        .removeClass('bg-primary')
+                        .removeClass('bg-success');
+
                 }
             </script>
         </div>
