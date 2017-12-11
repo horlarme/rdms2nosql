@@ -35,10 +35,18 @@ require_once "./header.php"
                         <h3 class="panel-title">Data Information</h3>
                     </div>
                     <div class="panel-body table-responsive">
-                        <table class="table-responsive">
+                        <table class="table-bordered col-xs-12">
                             <tr>
-                                <td><strong>Items to migrate</strong></td>
-                                <td><?= $b->itemsToMigrate();?></td>
+                                <td class="col-xs-6"><strong>Items to migrate</strong></td>
+                                <td class="col-xs-6"><?= $b->itemsToMigrate();?></td>
+                            </tr>
+                            <tr>
+                                <td class="col-xs-6"><strong>Continue/Start at</strong></td>
+                                <td class="col-xs-6">
+                                    <div class="form-group">
+                                        <input type="number" data-migrate-continue class="form-control" placeholder="10" onkeyup="changeCurrent(this.value)">
+                                    </div>
+                                </td>
                             </tr>
                         </table>
                     </div>
@@ -50,7 +58,7 @@ require_once "./header.php"
                         <h3 class="panel-title">Process</h3>
                     </div>
                     <div class="panel-body table-responsive">
-                        <table>
+                        <table class="table-bordered">
                             <tr>
                                 <td><strong>Processed</strong></td>
                                 <td><span class="processedItems">0</span></td>
@@ -88,10 +96,6 @@ require_once "./header.php"
                   * The totall number of items that will be looped over
                   */
                  total = <?= $b->itemsToMigrate(); ?>;
-                 /**
-                  * Create a url which will be sent to the server
-                  */
-                url = 'response.php?current=' + current + '&total=' + total;
 
                 /**
                  * When the user click on migrate button
@@ -103,6 +107,16 @@ require_once "./header.php"
                     startMigrate();
                 });
 
+                /**
+                 * Changing the current place to start the migration
+                 */
+                function changeCurrent(e){
+                    current = parseInt(e);
+                }
+
+                /**
+                 * Starting migration
+                 */
                 function startMigrate(){
 
                     /**
@@ -112,6 +126,11 @@ require_once "./header.php"
                          //Stop running this function
                         return false;
                      }
+
+                     /**
+                      * Create a url which will be sent to the server
+                      */
+                    url = 'response.php?current=' + current + '&total=' + total;
 
                      getResponse(url)
                         .done(function(response){
